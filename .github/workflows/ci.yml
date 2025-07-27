@@ -1,0 +1,31 @@
+name: CI Sécurité Web
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cloner le dépôt
+      uses: actions/checkout@v3
+
+    - name: Installer Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Installer les dépendances
+      run: npm install
+
+    - name: Audit de dépendances (npm audit)
+      run: npm audit --audit-level=moderate
+
+    - name: Analyse de code statique (Semgrep)
+      run: |
+        curl -sL https://semgrep.dev/install.sh | sh
+        ./semgrep/semgrep --config auto .
